@@ -1,0 +1,49 @@
+services:
+  auth-api:
+    build:
+      context: .
+      dockerfile: src/Dockerfile
+    container_name: auth-microservice
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - SQL_SERVER=postgres
+      - SQL_DATABASE=ScriptumAI-DBA
+      - SQL_USER=postgres
+      - SQL_PASSWORD=postgres
+      - SECRET_TOKEN=${SECRET_TOKEN:-change-this-secret-key}
+      - HOST_URL=http://localhost:3000
+    depends_on:
+      - postgres
+    networks:
+      - auth-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: auth-postgres
+    environment:
+      - POSTGRES_DB=ScriptumAI-DBA
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - auth-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  auth-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

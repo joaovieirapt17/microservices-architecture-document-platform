@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StatusType {
+  active
+  inactive
+  pending
+  suspended
+
+  @@map("status_type")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+
+  @@map("user_role")
+}
+
+model Organization {
+  id          String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name        String        @db.VarChar(100)
+  email       String        @db.VarChar(100)
+  subdomain   String        @db.VarChar(50)
+  sector      String        @db.VarChar(50)
+  city        String        @db.VarChar(50)
+  address     String        @db.VarChar(100)
+  contact     Int
+  zipCode     String        @map("zip_code") @db.VarChar(15)
+  status      StatusType
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamp()
+  memberships Membership[]
+  invites     Invite[]
+
+  @@map("organizations")
+}
+
+model Membership {
+  id             String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  role           UserRole
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("memberships")
+}
+
+model Invite {
+  id             String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  email          String       @db.VarChar(100)
+  role           UserRole
+  token          String       @db.VarChar(255)
+  expiresAt      DateTime     @map("expires_at") @db.Timestamp()
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamp()
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("invites")
+}

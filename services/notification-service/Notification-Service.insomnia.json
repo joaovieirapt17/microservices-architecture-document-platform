@@ -1,0 +1,379 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-12-07T19:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_notification_service",
+      "parentId": null,
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "name": "Notification Service - ScriptumAI",
+      "description": "API completa do Notification Service\n\nMicroserviço de notificações por email da plataforma ScriptumAI MEI.\n\n**Features:**\n- Envio de emails diretos\n- Templates dinâmicos (welcome, invite)\n- Consulta de logs com filtros\n- Event-Driven Architecture (RabbitMQ)\n- Database per Service (PostgreSQL dedicada)\n\n**Autor:** Pedro Seara\n**Tech Stack:** Node.js 18, Express, PostgreSQL 15, RabbitMQ 3, Nodemailer, Handlebars",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_base",
+      "parentId": "wrk_notification_service",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "name": "Base Environment",
+      "data": {},
+      "_type": "environment"
+    },
+    {
+      "_id": "env_dev",
+      "parentId": "env_base",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "name": "Development",
+      "data": {
+        "baseUrl": "http://localhost:3005/api",
+        "systemUserId": "00000000-0000-0000-0000-000000000001",
+        "systemOrgId": "00000000-0000-0000-0000-000000000000",
+        "welcomeTemplateId": "e2bf778d-f7ea-41a0-8d7a-327c2fd8ab71",
+        "inviteTemplateId": "5ab444dc-e2c6-4a4e-9a09-ceb3fdb0711c"
+      },
+      "_type": "environment"
+    },
+    {
+      "_id": "env_prod",
+      "parentId": "env_base",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "name": "Production (via Gateway)",
+      "data": {
+        "baseUrl": "http://localhost/api/notifications",
+        "systemUserId": "00000000-0000-0000-0000-000000000001",
+        "systemOrgId": "00000000-0000-0000-0000-000000000000",
+        "welcomeTemplateId": "e2bf778d-f7ea-41a0-8d7a-327c2fd8ab71",
+        "inviteTemplateId": "5ab444dc-e2c6-4a4e-9a09-ceb3fdb0711c"
+      },
+      "_type": "environment"
+    },
+    {
+      "_id": "fld_notifications",
+      "parentId": "wrk_notification_service",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "name": "Notifications",
+      "description": "Endpoints para envio de notificações por email",
+      "environment": {},
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_send_direct",
+      "parentId": "fld_notifications",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/send",
+      "name": "Send Email - Direct",
+      "description": "Envio direto de email especificando subject e body HTML/text",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"userId\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"recipientEmail\": \"user@example.com\",\n  \"subject\": \"Bem-vindo ao ScriptumAI\",\n  \"bodyHtml\": \"<h1>Olá!</h1><p>A sua conta foi criada com sucesso.</p><p>Comece já a usar a plataforma!</p>\",\n  \"bodyText\": \"Olá! A sua conta foi criada com sucesso. Comece já a usar a plataforma!\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_send_template_welcome_name",
+      "parentId": "fld_notifications",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/send",
+      "name": "Send Email - Template Welcome (by name)",
+      "description": "Email de boas-vindas usando template 'welcome' por nome",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"userId\": \"a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d\",\n  \"recipientEmail\": \"joao.silva@scriptumai.com\",\n  \"organizationId\": \"{{ _.systemOrgId }}\",\n  \"templateName\": \"welcome\",\n  \"templateVariables\": {\n    \"userName\": \"João Silva\",\n    \"appName\": \"ScriptumAI\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_send_template_welcome_id",
+      "parentId": "fld_notifications",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/send",
+      "name": "Send Email - Template Welcome (by ID)",
+      "description": "Email de boas-vindas usando template por UUID",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"userId\": \"a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d\",\n  \"recipientEmail\": \"joao.silva@scriptumai.com\",\n  \"templateId\": \"{{ _.welcomeTemplateId }}\",\n  \"templateVariables\": {\n    \"userName\": \"João Silva\",\n    \"appName\": \"ScriptumAI\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_send_template_invite",
+      "parentId": "fld_notifications",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/send",
+      "name": "Send Email - Template Invite",
+      "description": "Email de convite para organização usando template 'invite'",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"userId\": \"{{ _.systemUserId }}\",\n  \"recipientEmail\": \"maria.santos@example.com\",\n  \"organizationId\": \"{{ _.systemOrgId }}\",\n  \"templateName\": \"invite\",\n  \"templateVariables\": {\n    \"recipientName\": \"Maria Santos\",\n    \"organizationName\": \"ScriptumAI MEI\",\n    \"inviterName\": \"Pedro Seara\",\n    \"inviteLink\": \"http://localhost:3000/accept-invite?token=abc123xyz\",\n    \"role\": \"GESTOR\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "fld_logs",
+      "parentId": "wrk_notification_service",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "name": "Logs",
+      "description": "Endpoints para consultar logs de notificações",
+      "environment": {},
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_logs_all",
+      "parentId": "fld_logs",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/logs",
+      "name": "Get All Logs",
+      "description": "Consultar todos os logs de notificações com paginação",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "limit",
+          "value": "50",
+          "description": "Número de registos (1-100)"
+        },
+        {
+          "name": "offset",
+          "value": "0",
+          "description": "Offset para paginação"
+        }
+      ],
+      "headers": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_logs_status",
+      "parentId": "fld_logs",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/logs",
+      "name": "Get Logs - Filter by Status (SENT)",
+      "description": "Consultar apenas logs com status SENT",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "status",
+          "value": "SENT",
+          "description": "Filtrar por status (SENT/FAILED)"
+        },
+        {
+          "name": "limit",
+          "value": "10"
+        }
+      ],
+      "headers": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_logs_recipient",
+      "parentId": "fld_logs",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/logs",
+      "name": "Get Logs - Filter by Recipient",
+      "description": "Consultar logs de um destinatário específico",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "recipient",
+          "value": "user@example.com",
+          "description": "Filtrar por email destinatário"
+        }
+      ],
+      "headers": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_logs_userid",
+      "parentId": "fld_logs",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/logs",
+      "name": "Get Logs - Filter by User ID",
+      "description": "Consultar logs de um utilizador específico",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "userId",
+          "value": "123e4567-e89b-12d3-a456-426614174000",
+          "description": "Filtrar por ID do utilizador"
+        }
+      ],
+      "headers": [],
+      "_type": "request"
+    },
+    {
+      "_id": "fld_health",
+      "parentId": "wrk_notification_service",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "name": "Health & Monitoring",
+      "description": "Endpoints de monitorização e saúde do serviço",
+      "environment": {},
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_health",
+      "parentId": "fld_health",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/health",
+      "name": "Health Check",
+      "description": "Verificar status do serviço (uptime, timestamp, documentação)",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "_type": "request"
+    },
+    {
+      "_id": "fld_validation",
+      "parentId": "wrk_notification_service",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "name": "Validation Tests",
+      "description": "Testes de validação de inputs (esperam erro 400)",
+      "environment": {},
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_test_invalid_email",
+      "parentId": "fld_validation",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/send",
+      "name": "Test - Invalid Email",
+      "description": "DEVE retornar 400 - Email inválido",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"userId\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"recipientEmail\": \"not-an-email\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_test_invalid_uuid",
+      "parentId": "fld_validation",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/send",
+      "name": "Test - Invalid UUID",
+      "description": "DEVE retornar 400 - UUID inválido",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"userId\": \"invalid-uuid\",\n  \"recipientEmail\": \"test@example.com\",\n  \"subject\": \"Test\",\n  \"bodyHtml\": \"<p>Test</p>\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_test_missing_fields",
+      "parentId": "fld_validation",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/send",
+      "name": "Test - Missing Required Fields",
+      "description": "DEVE retornar 400 - userId obrigatório",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"recipientEmail\": \"test@example.com\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_test_invalid_query",
+      "parentId": "fld_validation",
+      "modified": 1701975600000,
+      "created": 1701975600000,
+      "url": "{{ _.baseUrl }}/notifications/logs",
+      "name": "Test - Invalid Query Params",
+      "description": "DEVE retornar 400 - Query params inválidos",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "limit",
+          "value": "200",
+          "description": "Inválido - máx 100"
+        },
+        {
+          "name": "offset",
+          "value": "-5",
+          "description": "Inválido - deve ser ≥0"
+        }
+      ],
+      "headers": [],
+      "_type": "request"
+    }
+  ]
+}

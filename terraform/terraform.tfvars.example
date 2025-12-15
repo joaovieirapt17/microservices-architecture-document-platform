@@ -1,0 +1,29 @@
+# DigitalOcean API Token
+do_token = "dop_v1_your_digitalocean_api_token_here"
+
+# Region
+region = "ams3"
+
+# Kubernetes Cluster Configuration
+cluster_name = "scriptumai-cluster"
+node_size    = "s-2vcpu-2gb"
+node_count   = 2
+
+# Database Configuration
+db_size = "db-s-1vcpu-1gb"
+db_name = "scriptumai"
+db_user = "scriptumai"
+
+# IP Address (your public IP for firewall rules)
+allowed_ip = "0.0.0.0/0"
+
+# Object Storage (Spaces) Bucket Name
+spaces_bucket_name = "scriptumai-documents"
+
+# Application Secrets (generate secure random strings)
+jwt_secret        = "your-jwt-secret-min-32-characters-long"
+rabbitmq_password = "your-secure-rabbitmq-password"
+
+# DigitalOcean Spaces Credentials
+spaces_access_key = "your-spaces-access-key"
+spaces_secret_key = "your-spaces-secret-key"

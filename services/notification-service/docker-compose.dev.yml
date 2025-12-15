@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # NOTIFICATION SERVICE DATABASE
+  # ==========================================
+  notification-db:
+    image: postgres:15-alpine
+    container_name: notification-db
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - notification-db-data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql  
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # RABBITMQ (Message Broker)
+  # ==========================================
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # MAILPIT (SMTP Server para desenvolvimento)
+  # ==========================================
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+  # ==========================================
+  # NOTIFICATION SERVICE
+  # ==========================================
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: notification-service
+    environment:
+      NODE_ENV: development
+      PORT: 3005
+      
+      # JWT Authentication (mesmo secret que auth-service)
+      SECRET_TOKEN: ${SECRET_TOKEN:-change-this-secret-key}       
+      # Database (dedicated instance para dev)
+      DB_HOST: notification-db
+      DB_PORT: 5432
+      DB_NAME: notification_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      
+      # RabbitMQ
+      RABBITMQ_URL: amqp://rabbitmq:rabbitmq@rabbitmq:5672
+      RABBITMQ_EXCHANGE: events
+      
+      # SMTP
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      SMTP_SECURE: false
+      SMTP_FROM_EMAIL: noreply@scriptumai.com
+      SMTP_FROM_NAME: ScriptumAI
+      
+      # Frontend
+      FRONTEND_URL: http://localhost:3000
+      
+    ports:
+      - "3005:3005"
+    depends_on:
+      notification-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://localhost:3005/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  notification-db-data:
+  rabbitmq-data:
+
+networks:
+  default:
+    name: scriptumai-network

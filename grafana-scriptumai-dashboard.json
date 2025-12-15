@@ -1,0 +1,571 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": ["last"],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.0.0",
+      "targets": [
+        {
+          "expr": "count(kube_pod_info{namespace=\"scriptumai\", created_by_name=~\"auth-service.*\"})",
+          "legendFormat": "auth-service",
+          "refId": "A"
+        },
+        {
+          "expr": "count(kube_pod_info{namespace=\"scriptumai\", created_by_name=~\"organization-service.*\"})",
+          "legendFormat": "organization-service",
+          "refId": "B"
+        },
+        {
+          "expr": "count(kube_pod_info{namespace=\"scriptumai\", created_by_name=~\"document-service.*\"})",
+          "legendFormat": "document-service",
+          "refId": "C"
+        },
+        {
+          "expr": "count(kube_pod_info{namespace=\"scriptumai\", created_by_name=~\"notification-service.*\"})",
+          "legendFormat": "notification-service",
+          "refId": "D"
+        },
+        {
+          "expr": "count(kube_pod_info{namespace=\"scriptumai\", created_by_name=~\"api-gateway.*\"})",
+          "legendFormat": "api-gateway",
+          "refId": "E"
+        }
+      ],
+      "title": "📦 Número de Pods por Serviço",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 3
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": ["lastNotNull"],
+          "fields": ""
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
+      },
+      "pluginVersion": "8.0.0",
+      "targets": [
+        {
+          "expr": "count(kube_pod_info{namespace=\"scriptumai\", created_by_name=~\"auth-service.*\"})",
+          "legendFormat": "auth-service",
+          "refId": "A"
+        },
+        {
+          "expr": "count(kube_pod_info{namespace=\"scriptumai\", created_by_name=~\"organization-service.*\"})",
+          "legendFormat": "organization-service",
+          "refId": "B"
+        },
+        {
+          "expr": "count(kube_pod_info{namespace=\"scriptumai\", created_by_name=~\"document-service.*\"})",
+          "legendFormat": "document-service",
+          "refId": "C"
+        },
+        {
+          "expr": "count(kube_pod_info{namespace=\"scriptumai\", created_by_name=~\"notification-service.*\"})",
+          "legendFormat": "notification-service",
+          "refId": "D"
+        },
+        {
+          "expr": "count(kube_pod_info{namespace=\"scriptumai\", created_by_name=~\"api-gateway.*\"})",
+          "legendFormat": "api-gateway",
+          "refId": "E"
+        }
+      ],
+      "title": "🔢 Pods Atuais (Números)",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": ["last", "max"],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.0.0",
+      "targets": [
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"scriptumai\", container=\"auth-service\"}[5m])) * 1000",
+          "legendFormat": "auth-service",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"scriptumai\", container=\"organization-service\"}[5m])) * 1000",
+          "legendFormat": "organization-service",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"scriptumai\", container=\"document-service\"}[5m])) * 1000",
+          "legendFormat": "document-service",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"scriptumai\", container=\"notification-service\"}[5m])) * 1000",
+          "legendFormat": "notification-service",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"scriptumai\", container=\"nginx\", pod=~\"api-gateway.*\"}[5m])) * 1000",
+          "legendFormat": "api-gateway",
+          "refId": "E"
+        }
+      ],
+      "title": "🖥️ CPU Usage por Serviço (millicores)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 500000000
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": ["last", "max"],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.0.0",
+      "targets": [
+        {
+          "expr": "sum(container_memory_usage_bytes{namespace=\"scriptumai\", container=\"auth-service\"})",
+          "legendFormat": "auth-service",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(container_memory_usage_bytes{namespace=\"scriptumai\", container=\"organization-service\"})",
+          "legendFormat": "organization-service",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(container_memory_usage_bytes{namespace=\"scriptumai\", container=\"document-service\"})",
+          "legendFormat": "document-service",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(container_memory_usage_bytes{namespace=\"scriptumai\", container=\"notification-service\"})",
+          "legendFormat": "notification-service",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(container_memory_usage_bytes{namespace=\"scriptumai\", container=\"nginx\", pod=~\"api-gateway.*\"})",
+          "legendFormat": "api-gateway",
+          "refId": "E"
+        }
+      ],
+      "title": "💾 Memory Usage por Serviço",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 500
+              },
+              {
+                "color": "red",
+                "value": 700
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 6,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "values": false,
+          "calcs": ["lastNotNull"],
+          "fields": ""
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "8.0.0",
+      "targets": [
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"scriptumai\", container=\"auth-service\"}[5m])) * 1000",
+          "legendFormat": "auth-service CPU",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"scriptumai\", container=\"organization-service\"}[5m])) * 1000",
+          "legendFormat": "organization-service CPU",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"scriptumai\", container=\"document-service\"}[5m])) * 1000",
+          "legendFormat": "document-service CPU",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"scriptumai\", container=\"notification-service\"}[5m])) * 1000",
+          "legendFormat": "notification-service CPU",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"scriptumai\", container=\"nginx\", pod=~\"api-gateway.*\"}[5m])) * 1000",
+          "legendFormat": "api-gateway CPU",
+          "refId": "E"
+        }
+      ],
+      "title": "📊 CPU Usage - Barra de Progresso (millicores)",
+      "type": "bargauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 7,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "values": false,
+          "calcs": ["lastNotNull"],
+          "fields": ""
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "8.0.0",
+      "targets": [
+        {
+          "expr": "(sum(container_memory_usage_bytes{namespace=\"scriptumai\", container=\"auth-service\"}) / sum(container_spec_memory_limit_bytes{namespace=\"scriptumai\", container=\"auth-service\"})) * 100",
+          "legendFormat": "auth-service Memory",
+          "refId": "A"
+        },
+        {
+          "expr": "(sum(container_memory_usage_bytes{namespace=\"scriptumai\", container=\"organization-service\"}) / sum(container_spec_memory_limit_bytes{namespace=\"scriptumai\", container=\"organization-service\"})) * 100",
+          "legendFormat": "organization-service Memory",
+          "refId": "B"
+        },
+        {
+          "expr": "(sum(container_memory_usage_bytes{namespace=\"scriptumai\", container=\"document-service\"}) / sum(container_spec_memory_limit_bytes{namespace=\"scriptumai\", container=\"document-service\"})) * 100",
+          "legendFormat": "document-service Memory",
+          "refId": "C"
+        },
+        {
+          "expr": "(sum(container_memory_usage_bytes{namespace=\"scriptumai\", container=\"notification-service\"}) / sum(container_spec_memory_limit_bytes{namespace=\"scriptumai\", container=\"notification-service\"})) * 100",
+          "legendFormat": "notification-service Memory",
+          "refId": "D"
+        },
+        {
+          "expr": "(sum(container_memory_usage_bytes{namespace=\"scriptumai\", container=\"nginx\", pod=~\"api-gateway.*\"}) / sum(container_spec_memory_limit_bytes{namespace=\"scriptumai\", container=\"nginx\", pod=~\"api-gateway.*\"})) * 100",
+          "legendFormat": "api-gateway Memory",
+          "refId": "E"
+        }
+      ],
+      "title": "📊 Memory Usage - Barra de Progresso (HPA threshold: 80%)",
+      "type": "bargauge"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": ["scriptumai", "kubernetes"],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "ScriptumAI - Serviços Overview",
+  "uid": "scriptumai-overview",
+  "version": 1
+}
