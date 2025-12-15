@@ -41,6 +41,8 @@ Multi-tenant document management system designed to demonstrate real-world micro
 
 ![Asynchronous Communication](docs/images/diagrama-comunicacao-assincrona.png)
 
+![Async Invite Flow](docs/images/async-invite-rabbitmq.png)
+
 ## 🛠️ Technology Stack
 
 ### Backend Services
@@ -228,7 +230,7 @@ scriptumai-microservices-architecture/
 │   └── outputs.tf
 ├── postman/                      # API testing collection
 ├── infra/                        # Database initialization scripts
-└── docker-compose.yaml           # Local development setup
+└── docker-compose.yaml           # Local development setup orchestrator
 ```
 
 ### Design Patterns Used
