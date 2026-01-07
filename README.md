@@ -1,251 +1,265 @@
-# Microservices Document Management Platform
+# Cloud Authentication Microservice
 
-A document management platform built with microservices architecture, deployed on DigitalOcean Kubernetes.
+A scalable authentication microservice built with Node.js, deployed on Kubernetes with full CI/CD automation. Developed as part of my Master's in Computer Engineering to demonstrate cloud-native patterns and DevOps practices.
 
-## 🎯 Project Overview
+## Overview
 
-Multi-tenant document management system designed to demonstrate real-world microservices patterns, event-driven architecture, and cloud deployment. The platform allows organizations to register, manage documents, invite users, and receive notifications through a fully asynchronous event system.
+This project implements a production-ready authentication service with:
 
-### System Context
+- JWT-based authentication
+- Kubernetes orchestration with auto-scaling
+- Infrastructure as Code using Terraform
+- Full CI/CD pipeline with GitHub Actions
+- Monitoring with Prometheus and Grafana
+- Automated semantic versioning
 
-![System Context View](docs/images/diagrama-contexto.png)
+The service is designed to scale horizontally based on CPU and memory metrics, with health checks and observability built in from the start.
 
-### Key Features
+## Architecture
 
-- **Multi-tenant Architecture** - Complete data isolation per organization
-- **Event-Driven Communication** - RabbitMQ-based async messaging
-- **JWT Authentication** - Secure token-based access control
-- **Document Management** - Upload, version, and organize documents
-- **User Invitations** - Email notifications via async events
-- **Cloud Native** - Kubernetes orchestration on DigitalOcean
-- **Scalable Design** - Independent microservice deployment
+```
+┌─────────────────────────────────────────────────────┐
+│                  Load Balancer                      │
+└───────────────────┬─────────────────────────────────┘
+                    │
+    ┌───────────────┴───────────────┐
+    │                               │
+┌───▼────┐  ┌──────────┐  ┌───────▼────┐
+│ API    │  │   API    │  │    API     │
+│ Pod 1  │  │  Pod 2   │  │   Pod N    │
+└───┬────┘  └────┬─────┘  └────┬───────┘
+    │            │             │
+    └────────────┴─────────────┘
+                 │
+         ┌───────▼────────┐
+         │   PostgreSQL   │
+         │  (Stateful)    │
+         └────────────────┘
+```
 
-## 🏗️ Architecture
+Stateless API pods scale independently from the database, allowing the system to handle traffic spikes efficiently.
 
-#### Synchronous Communication
+## Tech Stack
 
-![Synchronous Communication](docs/images/diagrama-comunicacao-sincrona.png)
+**Backend:** Node.js, Express.js, JWT  
+**Database:** PostgreSQL  
+**DevOps:** Docker, Kubernetes, Terraform  
+**CI/CD:** GitHub Actions  
+**Monitoring:** Prometheus, Grafana, K8s Metrics Server
 
-### Microservices Breakdown
-
-| Service                  | Technology      | Responsibility                   |
-| ------------------------ | --------------- | -------------------------------- |
-| **Auth Service**         | Node.js/Express | User authentication, JWT tokens  |
-| **Organization Service** | NestJS          | Tenant management, invitations   |
-| **Document Service**     | NestJS          | Document CRUD, metadata          |
-| **Notification Service** | Node.js/Express | Email notifications via RabbitMQ |
-
-## 🔄 Event-Driven Flow
-
-#### Asynchronous Communication
-
-![Asynchronous Communication](docs/images/diagrama-comunicacao-assincrona.png)
-
-![Async Invite Flow](docs/images/async-invite-rabbitmq.png)
-
-## 🛠️ Technology Stack
-
-### Backend Services
-
-- **Node.js 20** - Runtime environment
-- **NestJS 11** - Progressive Node.js framework
-- **Express.js** - Lightweight HTTP server
-
-### Data & Messaging
-
-- **PostgreSQL 16** - Relational database
-- **RabbitMQ 3** - Message broker
-- **Prisma** - ORM for database access
-- **Drizzle** - Query builder
-
-### Infrastructure
-
-- **Docker** - Containerization
-- **Kubernetes** - Orchestration
-- **DigitalOcean** - Cloud provider
-- **MinIO/Spaces** - Object storage
-
-### Security & API
-
-- **JWT** - Authentication tokens
-- **Nginx** - API Gateway
-- **CORS** - Cross-origin requests
-- **Rate Limiting** - DDoS protection
-
-## 📦 Installation & Setup
+## Getting Started
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 18+
 - Docker & Docker Compose
-- PostgreSQL 16
-- RabbitMQ 3
-- kubectl & kubeconfig
+- kubectl (for Kubernetes deployment)
 
-### Test with Postman
+### Local Development
 
-1. Import collection: `postman/ScriptumAI_Microservices.postman_collection.json`
-2. Import environment: `postman/ScriptumAI_Environment.postman_environment.json`
-3. Update `baseUrl` to `http://localhost`
-4. Run requests from "Initial Setup" folder
-
-### Infrastructure as Code
-
-Uses Terraform to provision:
-
-- DigitalOcean Kubernetes Cluster
-- PostgreSQL Managed Database
-- LoadBalancer for API Gateway
-- Persistent volumes for data
+Clone and install dependencies:
 
 ```bash
-cd terraform
+git clone <repository-url>
+cd cloud-auth-service/API
+npm install
+```
+
+Create a `.env` file:
+
+```env
+PORT=3001
+HOST=0.0.0.0
+SQL_SERVER=localhost
+SQL_PORT=5432
+SQL_DATABASE=cloudauth_db
+SQL_USER=postgres
+SQL_PASSWORD=postgres
+SECRET_TOKEN=change-this-in-production
+```
+
+Start the database and run the API:
+
+```bash
+docker compose up -d postgres
+npm run dev
+```
+
+Access the API:
+- API: http://localhost:3001
+- Swagger UI: http://localhost:3001/api-docs
+- Health: http://localhost:3001/health
+
+### Testing
+
+```bash
+npm test                    # All tests
+npm run test:unit          # Unit tests only
+npm run test:integration   # Integration tests
+```
+
+## Deployment
+
+### Docker
+
+Build and run with Docker Compose:
+
+```bash
+docker compose up -d
+docker compose logs -f api
+```
+
+### Kubernetes
+
+Deploy to your cluster:
+
+```bash
+kubectl apply -f k8s/
+kubectl get pods
+kubectl get hpa
+```
+
+Required secrets:
+
+```bash
+kubectl create secret generic scriptumai-db-secret \
+  --from-literal=host=your-db-host \
+  --from-literal=port=5432 \
+  --from-literal=database=cloudauth_db \
+  --from-literal=user=postgres \
+  --from-literal=password=your-password \
+  --from-literal=jwt_secret=your-jwt-secret
+```
+
+### Auto-scaling
+
+The HPA (Horizontal Pod Autoscaler) is configured to scale between 2-10 replicas based on:
+- CPU: 70% threshold
+- Memory: 80% threshold
+
+Monitor scaling in real-time:
+
+```bash
+kubectl get hpa -w
+```
+
+### Terraform
+
+Provision infrastructure:
+
+```bash
+terraform init
 terraform plan
 terraform apply
 ```
 
-## 📊 API Endpoints
+This creates the Kubernetes cluster, load balancer, persistent volumes, and monitoring stack.
+
+## CI/CD Pipeline
+
+The project uses GitHub Actions for automated workflows:
+
+**CI Pipeline** (runs on PRs and pushes):
+- Linting and code quality checks
+- Unit and integration tests
+- Docker build
+
+**Release Pipeline**:
+- Semantic versioning based on conventional commits
+- Automatic CHANGELOG generation
+- GitHub releases
+- Container image publishing to GHCR
+
+## Monitoring
+
+### Health Checks
+
+- **Liveness probe** (`GET /health`): Checks database connectivity
+- **Readiness probe** (`GET /health`): Verifies the API is ready
+
+### Metrics
+
+Grafana dashboard included (`grafana-dashboard.json`) with:
+- Request rate and latency
+- CPU and memory usage
+- Pod status and scaling behavior
+
+### Load Testing
+
+Run performance tests with K6:
+
+```bash
+k6 run k6-load-test.js
+```
+
+## API Endpoints
 
 ### Authentication
 
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login and get tokens
-- `GET /api/auth/me` - Get current user profile
-- `POST /api/auth/refresh` - Refresh access token
-
-### Organizations
-
-- `POST /api/organizations/register` - Create first org (bootstrap)
-- `GET /api/organizations` - List all organizations
-- `POST /api/organizations` - Create organization
-- `PUT /api/organizations/:id` - Update organization
-
-### Documents
-
-- `POST /api/documents` - Create document
-- `GET /api/documents` - List documents
-- `GET /api/documents/:id` - Get document details
-- `PUT /api/documents/:id` - Update document
-
-### Invites
-
-- `POST /api/invites` - Send user invitation
-- `GET /api/invites` - List invitations
-- `PATCH /api/invites/:id/accept` - Accept invitation
-
-### Notifications
-
-- `POST /api/notifications/send` - Send notification
-- `GET /api/notifications/user/:userId` - Get user notifications
-
-## 🔐 Security Architecture
-
-### API Gateway Layer
-
-- Rate limiting (10 req/sec per IP)
-- Request logging & monitoring
-- SSL/TLS termination
-- Network topology hiding
-
-### Service Layer
-
-- JWT token validation on every request
-- Role-based access control (RBAC)
-- organizationId validation (multi-tenant)
-- Request signing
-
-### Data Layer
-
-- Database-per-service pattern
-- Encrypted connections (SSL)
-- Credentials in Kubernetes Secrets
-- No hardcoded secrets in code
-
-### Secret Management
-
-- Kubernetes Secrets for production
-- .env files for local development
-- Terraform variables for infrastructure
-- GitHub token rotation
-
-## 🧪 Testing
-
-### Unit Tests
-
-```bash
-cd services/service-name
-npm test
+```
+POST   /api/authRegister   - Register new user
+POST   /api/authLogin      - Login and get JWT token
+POST   /api/authLogout     - Logout (requires auth)
 ```
 
-### Integration Tests
-
-```bash
-npm run test:e2e
-```
-
-### Load Testing (Optional)
-
-```bash
-# Using k6 or locust for performance testing
-k6 run performance-test.js
-```
-
-## 🔄 CI/CD Pipeline
-
-Automated workflow with GitHub Actions:
-
-1. Build Docker images (multi-platform)
-2. Run tests
-3. Push to GitHub Container Registry
-4. Deploy to Kubernetes
-
-```yaml
-# Example workflow in .github/workflows
-- Build & Test
-- Push to GHCR
-- Update Kubernetes deployments
-```
-
-### Git Branch Strategy
-
-![Branch Structure](docs/images/Estrutura_Branches.jpeg)
-
-## 📚 Project Structure
+### Users
 
 ```
-scriptumai-microservices-architecture/
-├── services/
-│   ├── api-gateway/              # Nginx reverse proxy
-│   ├── authentication-service/   # Auth microservice
-│   ├── organization-service/     # Organization & invites
-│   ├── document-service/         # Document management
-│   └── notification-service/     # Email notifications
-├── k8s/                          # Kubernetes manifests
-│   ├── namespace.yaml
-│   ├── config.yaml              # ConfigMaps & Secrets
-│   └── *.yaml                   # Service deployments
-├── terraform/                    # Infrastructure as Code
-│   ├── main.tf
-│   ├── variables.tf
-│   └── outputs.tf
-├── postman/                      # API testing collection
-├── infra/                        # Database initialization scripts
-└── docker-compose.yaml           # Local development setup orchestrator
+GET    /api/listUsers      - List all users (admin only)
 ```
 
-### Design Patterns Used
+### System
 
-- **Database-per-Service** - Data isolation
-- **API Gateway** - Single entry point
-- **Event Sourcing** - Async communication
+```
+GET    /health             - Health check
+GET    /api-docs           - Swagger documentation
+```
 
-## 📝 License
+Full API documentation is available at `/api-docs` when the server is running.
 
-This project is licensed under the MIT License - see LICENSE file for details.
+## Project Structure
 
-## 👤 Author
+```
+.
+├── API/
+│   ├── controllers/        # Request handlers
+│   ├── middleware/         # Auth & validation
+│   ├── models/             # Database models
+│   ├── routes/             # API routes
+│   ├── services/           # Business logic
+│   ├── tests/              # Unit & integration tests
+│   └── Dockerfile
+├── k8s/                    # Kubernetes manifests
+├── terraform/              # Infrastructure as Code
+├── .github/workflows/      # CI/CD pipelines
+└── docker-compose.yml
+```
 
-**João Vieira**
+## Security
 
-- GitHub: [@joaovieirapt17](https://github.com/joaovieirapt17)
-- Project developed as part of Master's in Computer Engineering
+- JWT tokens with configurable expiration
+- HTTPS enforcement in production
+- Kubernetes Secrets for sensitive data
+- Network policies for pod isolation
+- RBAC configured in the cluster
+
+## Academic Context
+
+Developed for the Cloud Computing Systems course as part of my Master's in Computer Engineering. The project demonstrates:
+
+- Cloud-native application design
+- Container orchestration with Kubernetes
+- Infrastructure as Code practices
+- CI/CD automation
+- Observability and monitoring
+- Auto-scaling based on metrics
+
+## License
+
+MIT License
+
+## Author
+
+João Vieira  
+GitHub: [@joaovieirapt17](https://github.com/joaovieirapt17)  
+LinkedIn: [João Vieira](https://www.linkedin.com/in/joao-vieira17/)
